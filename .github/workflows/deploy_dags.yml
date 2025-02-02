@@ -23,4 +23,4 @@ jobs:
 
       - name: Reload DAGs
         run: |
-          ssh airflow@${{ secrets.AIRFLOW_HOST }} "airflow dags reload"
+          ssh airflow@$localhost "airflow dags reload"
