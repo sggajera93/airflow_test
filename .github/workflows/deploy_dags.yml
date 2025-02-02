@@ -1,0 +1,26 @@
+name: Deploy DAGs
+
+on: [push]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.AIRFLOW_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.AIRFLOW_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Sync DAGs
+        run: |
+          rsync -avz dags/ airflow@${{ secrets.AIRFLOW_HOST }}:/home/airflow/airflow/dags/
+
+      - name: Reload DAGs
+        run: |
+          ssh airflow@${{ secrets.AIRFLOW_HOST }} "airflow dags reload"
