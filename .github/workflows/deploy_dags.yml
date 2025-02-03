@@ -1,26 +1,24 @@
-name: Deploy DAGs
+name: Deploy to GCS
 
-on: [push]
+on:
+  push:
+    branches:
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+    - name: Checkout
+      uses: actions/checkout@v3
 
-      - name: Setup SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.AIRFLOW_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.AIRFLOW_HOST }} >> ~/.ssh/known_hosts
+    - name: Setup gcloud
+      uses: google-github-actions/setup-gcloud@v1
+      with:
+        service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
 
-      - name: Sync DAGs
-        run: |
-          rsync -avz dags/ airflow@${{ secrets.AIRFLOW_HOST }}:/home/airflow/airflow/dags/
-
-      - name: Reload DAGs
-        run: |
-          ssh airflow@$localhost "airflow dags reload"
+    - name: Copy to GCS
+      run: |
+        gsutil cp -r . gs://your-bucket-name
