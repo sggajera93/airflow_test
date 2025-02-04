@@ -21,4 +21,4 @@ jobs:
 
     - name: Copy to GCS
       run: |
-        gsutil cp -r  gs://us-central1-airflow-test-24b29654-bucket/dags/
+        gsutil cp -r dags/* gs://us-central1-airflow-test-24b29654-bucket/dags/
