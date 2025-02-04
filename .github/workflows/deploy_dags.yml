@@ -16,7 +16,7 @@ jobs:
     - name: Setup gcloud
       uses: google-github-actions/setup-gcloud@v1
       with:
-        service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+        credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
         project_id: phonic-agility-448416-f4
 
     - name: Copy to GCS
